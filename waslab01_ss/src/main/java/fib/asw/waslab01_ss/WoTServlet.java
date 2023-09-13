@@ -44,7 +44,29 @@ public class WoTServlet extends HttpServlet {
         String auth = request.getParameter("author");
         String twtxt = request.getParameter("tweet_text");
 
-        tw = Database.insertTweet(auth, twtxt);
+        if (id == null) {
+            try {
+                tw = Database.insertTweet(auth, twtxt);
+
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+            Cookie c = new Cookie("CookieId" + String.valueOf(tw), sha256(String.valueOf(tw)));
+            response.addCookie(c);
+
+        }
+
+        else {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getValue().equals(sha256(String.valueOf(id)))) {
+                        Database.deleteTweet(Long.parseLong(id));
+                    }
+                }
+            }
+        }
 
         String req = request.getHeader("Accept");
 
