@@ -22,7 +22,6 @@ public class WoTServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        try {
             Vector<Tweet> tweets = Database.getTweets();
             String req = request.getHeader("Accept");
             if (req.equals("text/plain")) {
@@ -34,14 +33,14 @@ public class WoTServlet extends HttpServlet {
             } else {
                 printHTMLresult(tweets, request, response);
             }
-        } catch (SQLException exception) {
-            throw new ServletException(exception);
-        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        // This method does NOTHING but redirect to the main page
+        String auth = request.getParameter("author");
+        String twtxt = request.getParameter("tweet_text");
+
+        tw = Database.insertTweet(auth, twtxt);
 
         response.sendRedirect(request.getContextPath());
     }
