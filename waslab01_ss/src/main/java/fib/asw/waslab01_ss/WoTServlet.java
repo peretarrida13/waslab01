@@ -22,10 +22,21 @@ public class WoTServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        List<Tweet> tweets = tweetDAO.getAllTweets();
-
-        printHTMLresults(response, tweets);
-
+        try {
+            Vector<Tweet> tweets = Database.getTweets();
+            String req = request.getHeader("Accept");
+            if (req.equals("text/plain")) {
+                //Funico print plain results
+                PrintWriter output = res.getWriter();
+                for(Tweet tw : tweets) {
+                    output.println("tweet #" + tw.getTwid() + ": " + tw.getAuthor() + ": " + tw.getText() + ": " + tw.getDate());
+                }
+            } else {
+                printHTMLresult(tweets, request, response);
+            }
+        } catch (SQLException exception) {
+            throw new ServletException(exception);
+        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
