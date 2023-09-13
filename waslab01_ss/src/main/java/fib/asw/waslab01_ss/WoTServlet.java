@@ -22,16 +22,20 @@ public class WoTServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-            Vector<Tweet> tweets = Database.getTweets();
-            String req = request.getHeader("Accept");
-            if (req.equals("text/plain")) {
-                //Funico print plain results
-                PrintWriter output = res.getWriter();
-                for(Tweet tw : tweets) {
-                    output.println("tweet #" + tw.getTwid() + ": " + tw.getAuthor() + ": " + tw.getText() + ": " + tw.getDate());
+            try {
+                Vector<Tweet> tweets = Database.getTweets();
+                String req = request.getHeader("Accept");
+                if (req.equals("text/plain")) {
+                    //Funico print plain results
+                    PrintWriter output = res.getWriter();
+                    for(Tweet tw : tweets) {
+                        output.println("tweet #" + tw.getTwid() + ": " + tw.getAuthor() + ": " + tw.getText() + ": " + tw.getDate());
+                    }
+                } else {
+                    printHTMLresult(tweets, request, response);
                 }
-            } else {
-                printHTMLresult(tweets, request, response);
+            } catch (SQLException exception) {
+                throw new ServletException(exception);
             }
     }
 
@@ -43,7 +47,7 @@ public class WoTServlet extends HttpServlet {
         tw = Database.insertTweet(auth, twtxt);
 
         String req = request.getHeader("Accept");
-        
+
         if (req.equals("text/plain")) {
             PrintWriter output = response.getWriter();
             output.print(String.valueOf(tw));
