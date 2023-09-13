@@ -42,7 +42,14 @@ public class WoTServlet extends HttpServlet {
 
         tw = Database.insertTweet(auth, twtxt);
 
-        response.sendRedirect(request.getContextPath());
+        String req = request.getHeader("Accept");
+        
+        if (req.equals("text/plain")) {
+            PrintWriter output = response.getWriter();
+            output.print(String.valueOf(tw));
+        } else {
+            response.sendRedirect(request.getContextPath());
+        }
     }
 
     private void printHTMLresults (HttpServletResponse response, List<Tweet> tweets) throws IOException {
